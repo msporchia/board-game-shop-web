@@ -3,25 +3,26 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { CatalogPage } from '../../src/catalog/CatalogPage.tsx';
-import { productSummaries } from '../fixtures/products.ts';
+import { products } from '../fixtures/products.ts';
 import { renderWithProviders } from '../renderWithProviders.tsx';
 import { server } from '../server.ts';
 
 const PRODUCTS_URL = 'http://localhost:3000/products';
 
 describe('CatalogPage', () => {
-  it('renders a linked card for every product on the page', async () => {
+  it('renders a linked card with the price for every product on the page', async () => {
     renderWithProviders(<CatalogPage />);
 
     expect(await screen.findByText('Azul')).toBeInTheDocument();
     expect(screen.getByText('Gloomhaven')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Azul/ })).toHaveAttribute('href', '/games/101');
+    expect(screen.getByText(/34,90/)).toBeInTheDocument();
   });
 
   it('shows the empty state when the catalog has no products', async () => {
     server.use(
       http.get(PRODUCTS_URL, () =>
-        HttpResponse.json({ items: [], page: 1, page_size: 24, total: 0 }),
+        HttpResponse.json({ products: [], page: 1, pageSize: 24, hasNext: false }),
       ),
     );
 
@@ -45,8 +46,8 @@ describe('CatalogPage', () => {
         const page = new URL(request.url).searchParams.get('page') ?? '1';
         return HttpResponse.json(
           page === '1'
-            ? { items: productSummaries.slice(0, 1), page: 1, page_size: 1, total: 2 }
-            : { items: productSummaries.slice(1, 2), page: 2, page_size: 1, total: 2 },
+            ? { products: products.slice(0, 1), page: 1, pageSize: 1, hasNext: true }
+            : { products: products.slice(1, 2), page: 2, pageSize: 1, hasNext: false },
         );
       }),
     );
@@ -55,6 +56,7 @@ describe('CatalogPage', () => {
     await user.click(await screen.findByRole('button', { name: 'Successiva' }));
 
     expect(await screen.findByText('Gloomhaven')).toBeInTheDocument();
-    expect(screen.getByText('Pagina 2 di 2')).toBeInTheDocument();
+    expect(screen.getByText('Pagina 2')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Successiva' })).toBeDisabled();
   });
 });

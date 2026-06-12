@@ -3,39 +3,42 @@ import { fetchJson } from './http.ts';
 
 // TODO(cross-repo Phase 1): replace these hand-written contract mirrors with types
 // generated from the BFF's OpenAPI spec (openapi-typescript) once the BFF emits it.
-// Field names mirror the upstream catalog record (seller app/models/game_data.py).
+// The BFF translates legacy source names at its seed boundary — the wire model is
+// camelCase (see seller-shop docs/phase-1.md).
 
-/** Catalog card projection of a product (items of the BFF's `GET /products`). */
-export interface ProductSummary {
-  id_product: number;
+/** Product as served by the BFF (`GET /products` items and `GET /products/{id}`). */
+export interface Product {
+  id: number;
   name: string;
-  image: string | null;
-  players_display: string | null;
-  duration_min: number | null;
-  complexity: string | null;
-  complexity_level: number | null;
-  internal_rating: number | null;
-  categoria: string | null;
-  marca: string | null;
-}
-
-/** Full product record with the AI-enriched description (BFF `GET /products/{id}`). */
-export interface ProductDetail extends ProductSummary {
   description: string;
   tags: string[];
+  authors: string | null;
   players: number[];
-  age_min: number | null;
+  playersDisplay: string | null;
+  durationMin: number | null;
+  ageMin: number | null;
+  complexity: string | null;
+  complexityLevel: number | null;
   year: number | null;
-  autori: string | null;
-  is_expansion: boolean;
+  rating: number | null;
+  isExpansion: boolean;
+  category: string | null;
+  brand: string | null;
+  image: string | null;
+  /**
+   * Priced by the BFF from Phase 2 on (the upstream catalog has no price), so it
+   * may be missing/null against a Phase 1 BFF — a price-less product cannot be
+   * bought.
+   */
+  priceCents?: number | null;
 }
 
 /** One page of the catalog (BFF `GET /products` response). */
 export interface ProductsPage {
-  items: ProductSummary[];
+  products: Product[];
   page: number;
-  page_size: number;
-  total: number;
+  pageSize: number;
+  hasNext: boolean;
 }
 
 export const CATALOG_PAGE_SIZE = 24;
@@ -43,11 +46,11 @@ export const CATALOG_PAGE_SIZE = 24;
 export async function fetchProducts(page: number, signal?: AbortSignal): Promise<ProductsPage> {
   const params = new URLSearchParams({
     page: String(page),
-    page_size: String(CATALOG_PAGE_SIZE),
+    pageSize: String(CATALOG_PAGE_SIZE),
   });
-  return fetchJson<ProductsPage>(`${SHOP_API_URL}/products?${params}`, signal);
+  return fetchJson<ProductsPage>(`${SHOP_API_URL}/products?${params}`, { signal });
 }
 
-export async function fetchProduct(id: number, signal?: AbortSignal): Promise<ProductDetail> {
-  return fetchJson<ProductDetail>(`${SHOP_API_URL}/products/${id}`, signal);
+export async function fetchProduct(id: number, signal?: AbortSignal): Promise<Product> {
+  return fetchJson<Product>(`${SHOP_API_URL}/products/${id}`, { signal });
 }

@@ -9,5 +9,5 @@ export interface HealthStatus {
 
 /** Fetches the shop BFF health endpoint; an unreachable/erroring BFF becomes an error state. */
 export async function fetchHealth(signal?: AbortSignal): Promise<HealthStatus> {
-  return fetchJson<HealthStatus>(`${SHOP_API_URL}/health`, signal);
+  return fetchJson<HealthStatus>(`${SHOP_API_URL}/health`, { signal });
 }

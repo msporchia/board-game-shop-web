@@ -14,12 +14,14 @@ function renderDetail(route: string) {
 }
 
 describe('ProductDetailPage', () => {
-  it('renders the product with its AI-enriched description', async () => {
+  it('renders the product with price and AI-enriched description', async () => {
     renderDetail('/games/101');
 
     expect(await screen.findByRole('heading', { name: 'Azul' })).toBeInTheDocument();
     expect(screen.getByText(/azulejos portoghesi/)).toBeInTheDocument();
     expect(screen.getByText('Michael Kiesling')).toBeInTheDocument();
+    expect(screen.getByText(/34,90/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Aggiungi Azul al carrello' })).toBeInTheDocument();
   });
 
   it('shows the not-found state for an unknown id', async () => {

@@ -40,16 +40,16 @@ flowchart LR
 
 ## Stack
 
-|              | Choice                                                       | Why                                                                                  |
-| ------------ | ------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| Build        | Vite + React 19 + TypeScript strict                          | Current defaults; strict TS mirrors the backend contracts                            |
-| Server state | TanStack Query                                               | Caching/retry/invalidation without hand-rolled fetch state                           |
-| Client state | React Context + `useReducer` (cart)                          | The cart is small and local — core React primitives over a state library, on purpose |
-| Routing      | React Router                                                 | Catalog `/`, product `/games/:id`, search, checkout                                  |
-| API types    | Generated from the BFF's OpenAPI spec (`openapi-typescript`) | No hand-maintained DTO duplicates                                                    |
-| Identity     | `customer_id` + chat `session_id` in localStorage            | Demo identity, no auth; makes session memory tangible across reloads                 |
-| Styling      | Tailwind CSS, no component kit                               | The UI is part of the showcase — distinctive, not template-like                      |
-| Tests        | Vitest + React Testing Library + MSW                         | Behavior tested against mocked HTTP contracts                                        |
+|              | Choice                                                           | Why                                                                                                   |
+| ------------ | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Build        | Vite + React 19 + TypeScript strict                              | Current defaults; strict TS mirrors the backend contracts                                             |
+| Server state | TanStack Query                                                   | Caching/retry/invalidation without hand-rolled fetch state                                            |
+| Cart & money | Server-side cart on the BFF (TanStack Query, optimistic updates) | Real e-commerce shape: the backend owns prices, totals and order creation; the cart survives sessions |
+| Routing      | React Router                                                     | Catalog `/`, product `/games/:id`, search, checkout                                                   |
+| API types    | Generated from the BFF's OpenAPI spec (`openapi-typescript`)     | No hand-maintained DTO duplicates                                                                     |
+| Identity     | `customer_id` + chat `session_id` in localStorage                | Demo identity, no auth; makes session memory tangible across reloads                                  |
+| Styling      | Tailwind CSS, no component kit                                   | The UI is part of the showcase — distinctive, not template-like                                       |
+| Tests        | Vitest + React Testing Library + MSW                             | Behavior tested against mocked HTTP contracts                                                         |
 
 ## Structure convention
 

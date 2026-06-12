@@ -19,9 +19,14 @@ product.
 - **Components never call `fetch`.** Data access lives in the typed API layer
   (`src/api/` — one module per endpoint) consumed through custom hooks (one hook per
   concern, e.g. `useCart`, `useChatSession`).
-- **Server state vs client state stay distinct**: TanStack Query for everything from
-  the BFF; Context + `useReducer` for the cart (deliberately core React — do not
-  introduce a state library).
+- **Everything remote is server state** via TanStack Query — including the cart,
+  which lives on the BFF keyed by the localStorage `customer_id` and is mutated with
+  optimistic updates (instant UI, rollback on error). No client-state library;
+  ephemeral UI state stays in components.
+- **Commerce logic belongs to the BFF.** Prices, line/cart totals and order creation
+  (server cart → order, atomically) are computed server-side; the client renders
+  money, it never derives it (optimistic arithmetic is display-only until the server
+  settles).
 - **No barrel `index.ts` re-exports.** Deep, explicit imports.
 - **Tests mirror features**: Vitest + React Testing Library, HTTP mocked with MSW at
   the network boundary (never mock the hooks). Explicit imports from `vitest`

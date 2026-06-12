@@ -1,60 +1,49 @@
-import { type ProductDetail, type ProductSummary } from '../../src/api/products.ts';
+import { type Product } from '../../src/api/products.ts';
 
 /** Small catalog shaped exactly like the BFF contract; tests slice/override as needed. */
-export const productDetails: ProductDetail[] = [
+export const products: Product[] = [
   {
-    id_product: 101,
+    id: 101,
     name: 'Azul',
-    image: null,
-    players_display: '2-4',
-    duration_min: 45,
-    complexity: 'Facile (2)',
-    complexity_level: 2,
-    internal_rating: 8.3,
-    categoria: 'Giochi da tavolo > Astratti',
-    marca: 'Next Move Games',
     description:
       'Azul è un gioco astratto di piazzamento tessere ispirato agli azulejos portoghesi: ' +
       'i giocatori decorano le pareti del palazzo reale di Evora componendo mosaici colorati.',
     tags: ['astratto', 'piazzamento tessere'],
+    authors: 'Michael Kiesling',
     players: [2, 3, 4],
-    age_min: 8,
+    playersDisplay: '2-4',
+    durationMin: 45,
+    ageMin: 8,
+    complexity: 'Facile (2)',
+    complexityLevel: 2,
     year: 2017,
-    autori: 'Michael Kiesling',
-    is_expansion: false,
+    rating: 8.3,
+    isExpansion: false,
+    category: 'Giochi da tavolo > Astratti',
+    brand: 'Next Move Games',
+    image: null,
+    priceCents: 3490,
   },
   {
-    id_product: 102,
+    id: 102,
     name: 'Gloomhaven',
-    image: 'https://images.example.test/gloomhaven.jpg',
-    players_display: '1-4',
-    duration_min: 120,
-    complexity: 'Difficile (4)',
-    complexity_level: 4,
-    internal_rating: 8.9,
-    categoria: 'Giochi da tavolo > Giochi di Avventura',
-    marca: 'Cephalofair Games',
     description:
       'Gloomhaven è un dungeon crawler cooperativo a campagna: una squadra di mercenari ' +
       'esplora scenari legati da una trama persistente, con combattimenti guidati dalle carte.',
     tags: ['cooperativo', 'dungeon crawler', 'campagna'],
+    authors: 'Isaac Childres',
     players: [1, 2, 3, 4],
-    age_min: 14,
+    playersDisplay: '1-4',
+    durationMin: 120,
+    ageMin: 14,
+    complexity: 'Difficile (4)',
+    complexityLevel: 4,
     year: 2017,
-    autori: 'Isaac Childres',
-    is_expansion: false,
+    rating: 8.9,
+    isExpansion: false,
+    category: 'Giochi da tavolo > Giochi di Avventura',
+    brand: 'Cephalofair Games',
+    image: 'https://images.example.test/gloomhaven.jpg',
+    priceCents: 13990,
   },
 ];
-
-export const productSummaries: ProductSummary[] = productDetails.map((product) => ({
-  id_product: product.id_product,
-  name: product.name,
-  image: product.image,
-  players_display: product.players_display,
-  duration_min: product.duration_min,
-  complexity: product.complexity,
-  complexity_level: product.complexity_level,
-  internal_rating: product.internal_rating,
-  categoria: product.categoria,
-  marca: product.marca,
-}));

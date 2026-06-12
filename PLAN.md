@@ -24,14 +24,17 @@ as first-class components; client types generated from the BFF's OpenAPI spec.
 **Done when:** the full catalog is browsable; a product page shows pipeline-enriched
 content; no hand-written DTO duplicates.
 
-## Phase 2 — Cart & checkout ⬜
+## Phase 2 — Cart & checkout 🔶 · [implementation spec](docs/phase-2.md)
 
-Cart context (`useReducer`) persisted to localStorage; add/remove/quantity from card
-and detail page; cart drawer; `/checkout` page posting the order to the BFF and
-showing the recap. `customer_id` generated and persisted in localStorage.
+Server-side cart on the BFF keyed by the localStorage `customer_id`: TanStack Query
+resource with optimistic add/remove/quantity from card, detail page and cart drawer.
+Prices and totals come from the BFF (the commerce side is its domain — the client
+renders money, never computes it); `/checkout` posts the order, the BFF builds it
+from the server cart and clears it, the page shows the recap.
 
-**Done when:** cart survives a reload; checkout lands an order in the shop's DB and
-shows a recap; reducer and hooks covered by unit tests.
+**Done when:** the cart survives leaving and reopening the shop; checkout lands an
+order in the shop's DB and shows a recap with server-computed totals; cart hooks and
+flows covered by tests.
 
 ## Phase 3 — Chat advisor ⬜
 

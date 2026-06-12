@@ -21,24 +21,22 @@ export function CatalogPage() {
     );
   }
 
-  if (data.items.length === 0) {
+  if (data.products.length === 0) {
     return <EmptyState message="Nessun gioco in catalogo." />;
   }
-
-  const totalPages = Math.max(1, Math.ceil(data.total / data.page_size));
 
   return (
     <section className="space-y-8">
       <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {data.items.map((product) => (
-          <li key={product.id_product}>
+        {data.products.map((product) => (
+          <li key={product.id}>
             <GameCard product={product} />
           </li>
         ))}
       </ul>
       <CatalogPagination
         page={page}
-        totalPages={totalPages}
+        hasNext={data.hasNext}
         onPageChange={(next) => setSearchParams(next === 1 ? {} : { page: String(next) })}
       />
     </section>
@@ -47,12 +45,12 @@ export function CatalogPage() {
 
 interface CatalogPaginationProps {
   page: number;
-  totalPages: number;
+  hasNext: boolean;
   onPageChange: (page: number) => void;
 }
 
 /** Private to CatalogPage: prev/next controls over the `?page=` search param. */
-function CatalogPagination({ page, totalPages, onPageChange }: CatalogPaginationProps) {
+function CatalogPagination({ page, hasNext, onPageChange }: CatalogPaginationProps) {
   const buttonClass =
     'rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40';
 
@@ -66,13 +64,11 @@ function CatalogPagination({ page, totalPages, onPageChange }: CatalogPagination
       >
         Precedente
       </button>
-      <span className="text-sm text-slate-600">
-        Pagina {page} di {totalPages}
-      </span>
+      <span className="text-sm text-slate-600">Pagina {page}</span>
       <button
         type="button"
         className={buttonClass}
-        disabled={page >= totalPages}
+        disabled={!hasNext}
         onClick={() => onPageChange(page + 1)}
       >
         Successiva

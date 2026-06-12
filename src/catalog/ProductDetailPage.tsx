@@ -1,8 +1,10 @@
 import { Link, useParams } from 'react-router';
 import { useProduct } from './useProduct.ts';
 import { ApiError } from '../api/http.ts';
+import { AddToCartButton } from '../cart/AddToCartButton.tsx';
 import { ErrorState } from '../ui/ErrorState.tsx';
 import { LoadingState } from '../ui/LoadingState.tsx';
+import { formatCents } from '../ui/money.ts';
 
 export function ProductDetailPage() {
   const { id } = useParams();
@@ -37,14 +39,14 @@ function ProductDetailContent({ productId }: { productId: number }) {
   }
 
   const facts: Array<[string, string]> = [];
-  if (data.players_display) facts.push(['Giocatori', data.players_display]);
-  if (data.duration_min != null) facts.push(['Durata', `${data.duration_min} min`]);
-  if (data.age_min != null) facts.push(['Età', `${data.age_min}+`]);
+  if (data.playersDisplay) facts.push(['Giocatori', data.playersDisplay]);
+  if (data.durationMin != null) facts.push(['Durata', `${data.durationMin} min`]);
+  if (data.ageMin != null) facts.push(['Età', `${data.ageMin}+`]);
   if (data.complexity) facts.push(['Complessità', data.complexity]);
   if (data.year != null) facts.push(['Anno', String(data.year)]);
-  if (data.autori) facts.push(['Autori', data.autori]);
-  if (data.marca) facts.push(['Editore', data.marca]);
-  if (data.categoria) facts.push(['Categoria', data.categoria]);
+  if (data.authors) facts.push(['Autori', data.authors]);
+  if (data.brand) facts.push(['Editore', data.brand]);
+  if (data.category) facts.push(['Categoria', data.category]);
 
   return (
     <article className="space-y-8">
@@ -66,12 +68,18 @@ function ProductDetailContent({ productId }: { productId: number }) {
         <div className="space-y-4">
           <header className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">{data.name}</h1>
-            {data.internal_rating != null ? (
+            {data.rating != null ? (
               <p className="text-base font-medium text-amber-600">
-                ★ {data.internal_rating.toFixed(1)} / 10
+                ★ {data.rating.toFixed(1)} / 10
               </p>
             ) : null}
           </header>
+          <p className="text-2xl font-semibold text-slate-900">
+            {data.priceCents != null ? formatCents(data.priceCents) : 'Prezzo non disponibile'}
+          </p>
+          <div className="max-w-xs">
+            <AddToCartButton product={data} />
+          </div>
           <dl className="flex flex-col gap-1 text-sm">
             {facts.map(([label, value]) => (
               <div key={label} className="flex gap-2">
