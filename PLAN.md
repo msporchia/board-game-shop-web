@@ -15,7 +15,7 @@ CI: lint + tests.
 **Done when:** a placeholder page renders a value fetched from the BFF's `/health`;
 CI green.
 
-## Phase 1 — Catalog ⬜
+## Phase 1 — Catalog 🔶 · [implementation spec](docs/phase-1.md)
 
 Catalog grid of game cards (image, name, players, duration, complexity, rating);
 product detail page rendering the AI-enriched description; loading/error/empty states

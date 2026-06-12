@@ -1,11 +1,16 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
-import { HomePage } from '../home/HomePage.tsx';
+import { AppLayout } from './AppLayout.tsx';
+import { CatalogPage } from '../catalog/CatalogPage.tsx';
+import { ProductDetailPage } from '../catalog/ProductDetailPage.tsx';
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<CatalogPage />} />
+          <Route path="/games/:id" element={<ProductDetailPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
