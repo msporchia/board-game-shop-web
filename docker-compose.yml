@@ -1,0 +1,14 @@
+services:
+  seller-web:
+    build: .
+    ports:
+      - '5173:5173'
+    volumes:
+      # Bind-mount the source for HMR; keep the image's node_modules via an
+      # anonymous volume so the host's platform-specific deps don't leak in.
+      - .:/app
+      - /app/node_modules
+    environment:
+      # VITE_SHOP_API_URL is a BROWSER-side URL: it must resolve from the user's
+      # browser, not from inside the docker network. Keep it on localhost.
+      - VITE_SHOP_API_URL=http://localhost:3000
