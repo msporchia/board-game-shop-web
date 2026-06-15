@@ -1,4 +1,4 @@
-import { type Cart, type CartItem } from '../src/api/cart.ts';
+import type { Cart, CartItem } from '../src/contracts/cart.ts';
 
 /**
  * Stateful in-memory store behind the MSW cart/order handlers, mimicking the

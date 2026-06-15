@@ -1,13 +1,11 @@
-import { SHOP_API_URL } from './config.ts';
 import { fetchJson } from './http.ts';
+import type { HealthStatus } from '../contracts/health.ts';
 
-/** Shape of the BFF's `GET /health` response. */
-export interface HealthStatus {
-  status: string;
-  service: string;
-}
+const ENDPOINTS = {
+  health: () => `/health`,
+} as const;
 
 /** Fetches the shop BFF health endpoint; an unreachable/erroring BFF becomes an error state. */
 export async function fetchHealth(signal?: AbortSignal): Promise<HealthStatus> {
-  return fetchJson<HealthStatus>(`${SHOP_API_URL}/health`, { signal });
+  return fetchJson<HealthStatus>(ENDPOINTS.health(), { signal });
 }

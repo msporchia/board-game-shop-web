@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { type Product } from '../api/products.ts';
+import type { Product } from '../contracts/products.ts';
 import { AddToCartButton } from '../cart/AddToCartButton.tsx';
 import { formatCents } from '../ui/money.ts';
 

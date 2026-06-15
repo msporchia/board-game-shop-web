@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { useCreateOrder } from './useCreateOrder.ts';
-import { type Order } from '../api/orders.ts';
+import type { Order } from '../contracts/orders.ts';
 import { useCart } from '../cart/useCart.ts';
 import { EmptyState } from '../ui/EmptyState.tsx';
 import { ErrorState } from '../ui/ErrorState.tsx';

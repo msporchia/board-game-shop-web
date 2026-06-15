@@ -1,3 +1,5 @@
+import { SHOP_API_URL } from './config.ts';
+
 /** Error thrown for non-2xx responses; carries the HTTP status so callers can branch (e.g. 404). */
 export class ApiError extends Error {
   readonly status: number;
@@ -16,9 +18,14 @@ interface JsonRequestOptions {
   signal?: AbortSignal;
 }
 
-/** Typed JSON request: throws ApiError on non-2xx so TanStack Query treats it as an error state. */
-export async function fetchJson<T>(url: string, options: JsonRequestOptions = {}): Promise<T> {
+/**
+ * Typed JSON request against the shop BFF. Takes a relative path (e.g. `/carts/42`) and
+ * prepends the base URL here — the single place that knows it. Throws ApiError on non-2xx
+ * so TanStack Query treats it as an error state.
+ */
+export async function fetchJson<T>(path: string, options: JsonRequestOptions = {}): Promise<T> {
   const { method = 'GET', body, signal } = options;
+  const url = `${SHOP_API_URL}${path}`;
   const response = await fetch(url, {
     method,
     signal,

@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { deleteCartItem, fetchCart, putCartItem, type Cart, type CartItem } from '../api/cart.ts';
+import { deleteCartItem, fetchCart, putCartItem } from '../api/cart.ts';
+import type { Cart, CartItem } from '../contracts/cart.ts';
 import { getCustomerId } from '../customer/customerId.ts';
 
 /** Product fields needed to render an optimistic cart line before the server answers. */
-export interface CartProductRef {
+export interface ProductRef {
   id: number;
   name: string;
   image: string | null;
@@ -16,7 +17,7 @@ interface UseCartResult {
   isError: boolean;
   /** Total quantity across lines; 0 while the cart loads. */
   itemCount: number;
-  addItem: (product: CartProductRef) => void;
+  addItem: (product: ProductRef) => void;
   /** Sets a line's quantity; ≤ 0 removes the line. Clamped to MAX_QUANTITY. */
   setItemQuantity: (item: CartItem, quantity: number) => void;
   removeItem: (productId: number) => void;
@@ -24,8 +25,11 @@ interface UseCartResult {
 
 export const MAX_QUANTITY = 99;
 
-// Optimistic rewrites recompute totals client-side for DISPLAY ONLY: the server
-// remains the source of truth and overwrites them on settle (see CLAUDE.md).
+// Optimistic totals assume discounts don't change (linear pricing): exact in the
+// common case, reconciled by the server on settle if a threshold flips. When the BFF
+// emits discounts it MUST expose them as explicit lines (server is sole author of
+// money) and the UI MUST render them, so displayed lines always sum to the shown
+// total. Until then there are no non-product lines to render (see CLAUDE.md).
 function withRecomputedTotals(cart: Cart, items: CartItem[]): Cart {
   return {
     ...cart,
@@ -35,7 +39,7 @@ function withRecomputedTotals(cart: Cart, items: CartItem[]): Cart {
   };
 }
 
-function upsertItem(cart: Cart, product: CartProductRef, quantity: number): Cart {
+function upsertItem(cart: Cart, product: ProductRef, quantity: number): Cart {
   const exists = cart.items.some((item) => item.productId === product.id);
   const items = exists
     ? cart.items.map((item) =>
@@ -92,7 +96,7 @@ export function useCart(): UseCartResult {
   const settle = () => queryClient.invalidateQueries({ queryKey });
 
   const setItemMutation = useMutation({
-    mutationFn: ({ product, quantity }: { product: CartProductRef; quantity: number }) =>
+    mutationFn: ({ product, quantity }: { product: ProductRef; quantity: number }) =>
       putCartItem(customerId, product.id, quantity),
     onMutate: ({ product, quantity }) =>
       optimistically((cart) => upsertItem(cart, product, quantity)),

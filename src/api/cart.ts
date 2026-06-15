@@ -1,30 +1,13 @@
-import { SHOP_API_URL } from './config.ts';
 import { fetchJson } from './http.ts';
+import type { Cart } from '../contracts/cart.ts';
 
-// TODO(cross-repo Phase 2): replace with types generated from the BFF's OpenAPI
-// spec once its cart slice lands (see docs/phase-2.md for the agreed contract).
-
-/** Cart line as composed by the BFF: denormalized snapshot, server-computed total. */
-export interface CartItem {
-  productId: number;
-  name: string;
-  image: string | null;
-  unitPriceCents: number;
-  quantity: number;
-  lineTotalCents: number;
-}
-
-/** Server-side cart keyed by the localStorage customer id; all totals are the BFF's. */
-export interface Cart {
-  customerId: string;
-  currency: 'EUR';
-  items: CartItem[];
-  totalItems: number;
-  totalCents: number;
-}
+const ENDPOINTS = {
+  cart: (customerId: string) => `/carts/${customerId}`,
+  item: (customerId: string, productId: number) => `/carts/${customerId}/items/${productId}`,
+} as const;
 
 export async function fetchCart(customerId: string, signal?: AbortSignal): Promise<Cart> {
-  return fetchJson<Cart>(`${SHOP_API_URL}/carts/${customerId}`, { signal });
+  return fetchJson<Cart>(ENDPOINTS.cart(customerId), { signal });
 }
 
 /** Sets the quantity of a product in the cart (idempotent add/update). Returns the full cart. */
@@ -33,7 +16,7 @@ export async function putCartItem(
   productId: number,
   quantity: number,
 ): Promise<Cart> {
-  return fetchJson<Cart>(`${SHOP_API_URL}/carts/${customerId}/items/${productId}`, {
+  return fetchJson<Cart>(ENDPOINTS.item(customerId, productId), {
     method: 'PUT',
     body: { quantity },
   });
@@ -41,7 +24,7 @@ export async function putCartItem(
 
 /** Removes a product from the cart. Returns the full cart. */
 export async function deleteCartItem(customerId: string, productId: number): Promise<Cart> {
-  return fetchJson<Cart>(`${SHOP_API_URL}/carts/${customerId}/items/${productId}`, {
+  return fetchJson<Cart>(ENDPOINTS.item(customerId, productId), {
     method: 'DELETE',
   });
 }

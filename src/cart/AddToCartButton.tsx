@@ -1,5 +1,5 @@
 import { useCart } from './useCart.ts';
-import { type Product } from '../api/products.ts';
+import type { Product } from '../contracts/products.ts';
 
 interface AddToCartButtonProps {
   product: Pick<Product, 'id' | 'name' | 'image' | 'priceCents'>;

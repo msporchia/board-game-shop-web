@@ -1,4 +1,4 @@
-import { type Product } from '../../src/api/products.ts';
+import type { Product } from '../../src/contracts/products.ts';
 
 /** Small catalog shaped exactly like the BFF contract; tests slice/override as needed. */
 export const products: Product[] = [
