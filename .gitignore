@@ -11,6 +11,13 @@ dist
 dist-ssr
 coverage
 
+# Playwright
+test-results
+playwright-report
+blob-report
+playwright/.cache
+e2e/artifacts
+
 # Env files (keep the example)
 .env
 .env.*
