@@ -1,8 +1,3 @@
-// TODO(cross-repo Phase 0): replace with types generated from the BFF's OpenAPI
-// spec (openapi-typescript) once the BFF emits it.
+import type { paths } from './openapi.ts';
 
-/** Shape of the BFF's `GET /health` response. */
-export interface HealthStatus {
-  status: string;
-  service: string;
-}
+export type HealthStatus = paths['/health']['get']['responses'][200]['content']['application/json'];

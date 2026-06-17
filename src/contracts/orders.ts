@@ -1,13 +1,5 @@
-import type { CartItem } from './cart.ts';
+import type { paths } from './openapi.ts';
 
-// TODO(cross-repo Phase 2): replace with types generated from the BFF's OpenAPI
-// spec once its orders slice lands (see docs/phase-2.md for the agreed contract).
+export type Order = paths['/orders']['post']['responses'][201]['content']['application/json'];
 
-/** Order as returned by the BFF: built atomically from the stored cart, price snapshot included. */
-export interface Order {
-  id: number;
-  createdAt: string;
-  currency: 'EUR';
-  items: CartItem[];
-  totalCents: number;
-}
+export type OrderItem = Order['items'][number];

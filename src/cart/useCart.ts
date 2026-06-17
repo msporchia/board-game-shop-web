@@ -7,7 +7,7 @@ import { getCustomerId } from '../customer/customerId.ts';
 export interface ProductRef {
   id: number;
   name: string;
-  image: string | null;
+  image: string;
   priceCents: number;
 }
 
@@ -34,7 +34,6 @@ function withRecomputedTotals(cart: Cart, items: CartItem[]): Cart {
   return {
     ...cart,
     items,
-    totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
     totalCents: items.reduce((sum, item) => sum + item.lineTotalCents, 0),
   };
 }
@@ -111,7 +110,7 @@ export function useCart(): UseCartResult {
     onSettled: settle,
   });
 
-  const itemCount = query.data?.totalItems ?? 0;
+  const itemCount = query.data?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
   return {
     cart: query.data,

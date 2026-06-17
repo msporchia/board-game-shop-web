@@ -82,13 +82,43 @@ export const handlers = [
     return HttpResponse.json(
       {
         id: nextOrderId(),
+        customerId,
         createdAt: '2026-06-12T10:00:00.000Z',
-        currency: 'EUR',
         items: cart.items,
         totalCents: cart.totalCents,
       },
       { status: 201 },
     );
+  }),
+
+  http.post(`${SHOP_API_URL}/chat`, async ({ request }) => {
+    const { choices } = (await request.json()) as { choices?: string[] };
+    const narrowed = choices?.includes('max 45 minuti');
+    const product = narrowed ? products[0] : products[1];
+    if (!product) {
+      return HttpResponse.json({
+        message: 'Non ho trovato giochi adatti.',
+        games: [],
+        quickReplies: [],
+      });
+    }
+    return HttpResponse.json({
+      message: narrowed
+        ? 'Allora Azul è il candidato più rapido: astratto, elegante e sotto l’ora.'
+        : 'Se cercate qualcosa di cooperativo e corposo, partirei da Gloomhaven.',
+      games: [
+        {
+          id: product.id,
+          name: product.name,
+          image: product.image,
+          priceCents: product.priceCents,
+          playersDisplay: product.playersDisplay,
+          durationMin: product.durationMin,
+          complexity: product.complexity,
+        },
+      ],
+      quickReplies: narrowed ? ['un’altra idea'] : ['max 45 minuti', 'più leggero'],
+    });
   }),
 ];
 

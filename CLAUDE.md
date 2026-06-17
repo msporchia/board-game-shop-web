@@ -2,13 +2,30 @@
 
 ## What this repo is
 
-`board-game-shop-web` — the React storefront UI of a three-repo board-game e-commerce
-demo. Read `README.md` (role, architecture, stack rationale) and `PLAN.md` (phased
-roadmap; each phase gets a detailed spec in `docs/` when it starts). Sibling
-checkouts: `../seller` (Python AI/RAG service, owns the compose stack) and
-`../seller-shop` (Node BFF — the ONLY service this app talks to, default
-`http://localhost:3000`). This is a portfolio/showcase project: code quality is the
-product.
+`board-game-shop-web` — a compact React/TypeScript storefront and demo UI for a
+three-repo board-game RAG seller. Read `README.md` (purpose, architecture, stack
+rationale) and `PLAN.md` (current portfolio/demo direction). Sibling checkouts:
+`../seller` (Python AI/RAG service, owns the compose stack) and `../seller-shop`
+(Node BFF — the ONLY service this app talks to, default `http://localhost:3000`).
+This is a portfolio/showcase project: code quality is the product.
+
+## Product direction
+
+The target is **minimal storefront + polished conversational RAG demo**.
+
+Keep catalog, product detail, cart and checkout deliberately small. They exist to
+show production-shaped React/TS and to give recommended games somewhere real to land.
+Do not grow this into a broad e-commerce product unless the user explicitly changes
+the goal.
+
+The intentional "special" surface is the chat advisor: a recordable conversation UI
+that makes the RAG seller visible with grounded game cards, quick replies and
+add-to-cart from recommendations. When choosing between more store features and a
+clearer filmed RAG demo, prioritize the demo.
+
+Avoid standalone faceted search, auth/account areas, payment realism, advanced
+personalization screens, large design-system work, or broad full-stack e2e unless
+they directly serve the recorded chat-to-cart showcase.
 
 ## Code structure convention
 
@@ -39,6 +56,10 @@ react-router v7 (library mode), Tailwind CSS v4 (no component kit — the UI is 
 the showcase). Prettier:
 `{ "singleQuote": true, "semi": true, "printWidth": 100, "trailingComma": "all" }`
 (shared spec with seller-shop — do not drift).
+
+The BFF contract may still be evolving in `seller-shop`. Keep contract types isolated
+under `src/contracts/` and endpoint details under `src/api/`; feature components should
+not encode backend wiring or seller/RAG internals.
 
 ## Language
 

@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { Link, Outlet } from 'react-router';
 import { CartButton } from '../cart/CartButton.tsx';
 import { CartDrawer } from '../cart/CartDrawer.tsx';
+import { ChatButton } from '../chat/ChatButton.tsx';
+import { ChatDrawer } from '../chat/ChatDrawer.tsx';
 import { ShopStatusBadge } from '../health/ShopStatusBadge.tsx';
 
 /** App shell: header with brand, BFF status and cart; pages render in the outlet. */
 export function AppLayout() {
   const [cartOpen, setCartOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -17,6 +20,7 @@ export function AppLayout() {
           </Link>
           <div className="flex items-center gap-3">
             <ShopStatusBadge />
+            <ChatButton onClick={() => setChatOpen(true)} />
             <CartButton onClick={() => setCartOpen(true)} />
           </div>
         </div>
@@ -24,6 +28,7 @@ export function AppLayout() {
       <main className="mx-auto max-w-6xl px-6 py-8">
         <Outlet />
       </main>
+      <ChatDrawer open={chatOpen} onClose={() => setChatOpen(false)} />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );

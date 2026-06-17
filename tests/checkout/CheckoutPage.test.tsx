@@ -11,7 +11,7 @@ function seedCart(): string {
   writeCartItem(customerId, {
     productId: 101,
     name: 'Azul',
-    image: null,
+    image: 'https://images.example.test/azul.jpg',
     unitPriceCents: 3490,
     quantity: 2,
     lineTotalCents: 6980,

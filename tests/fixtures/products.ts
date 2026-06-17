@@ -21,7 +21,7 @@ export const products: Product[] = [
     isExpansion: false,
     category: 'Giochi da tavolo > Astratti',
     brand: 'Next Move Games',
-    image: null,
+    image: 'https://images.example.test/azul.jpg',
     priceCents: 3490,
   },
   {

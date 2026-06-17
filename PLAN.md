@@ -1,79 +1,153 @@
-# Plan
+# Portfolio Plan
 
-This app's slice of the storefront roadmap. Phase numbers are aligned across the three
-repos (seller = [board-game-rag-seller](https://github.com/msporchia/board-game-rag-seller),
-shop = [board-game-shop-api](https://github.com/msporchia/board-game-shop-api)) so a
-phase is "done" when every involved repo's slice is done.
-Status legend: ⬜ not started · 🔶 in progress · ✅ done.
+This repo is not planned as a full e-commerce product. Its job is to demonstrate
+React/TypeScript competence and provide a clean, recordable UI for the RAG seller.
 
-## Phase 0 — Scaffold 🔶 · [implementation spec](docs/phase-0.md)
+North star:
 
-Vite + React 19 + TypeScript strict, ESLint + Prettier (config aligned with shop),
-Vitest + React Testing Library + MSW. Dev compose service joining the seller stack.
-CI: lint + tests.
+> Minimal storefront + polished conversational RAG demo.
 
-**Done when:** a placeholder page renders a value fetched from the BFF's `/health`;
-CI green.
+Status legend: ⬜ not started · 🔶 in progress · ✅ implemented locally.
 
-## Phase 1 — Catalog 🔶 · [implementation spec](docs/phase-1.md)
+## Scope Decision
 
-Catalog grid of game cards (image, name, players, duration, complexity, rating);
-product detail page rendering the AI-enriched description; loading/error/empty states
-as first-class components; client types generated from the BFF's OpenAPI spec.
+Keep simple:
 
-**Done when:** the full catalog is browsable; a product page shows pipeline-enriched
-content; no hand-written DTO duplicates.
+- catalog browsing;
+- product detail;
+- server-side cart;
+- simulated checkout/order recap;
+- straightforward loading, empty and error states.
 
-## Phase 2 — Cart & checkout 🔶 · [implementation spec](docs/phase-2.md)
+Make special:
 
-Server-side cart on the BFF keyed by the localStorage `customer_id`: TanStack Query
-resource with optimistic add/remove/quantity from card, detail page and cart drawer.
-Prices and totals come from the BFF (the commerce side is its domain — the client
-renders money, never computes it); `/checkout` posts the order, the BFF builds it
-from the server cart and clears it, the page shows the recap.
+- the chat advisor UI, because it is the visual proof of the RAG seller;
+- recommendation cards inside the conversation;
+- quick replies that become real choices/filters;
+- add-to-cart from a recommendation without leaving the chat;
+- enough motion/polish to film the flow for the seller README.
 
-**Done when:** the cart survives leaving and reopening the shop; checkout lands an
-order in the shop's DB and shows a recap with server-computed totals; cart hooks and
-flows covered by tests.
+Avoid unless it directly helps the filmed demo:
 
-## Phase 3 — Chat advisor ⬜
+- standalone faceted search page;
+- auth, payment, account area or realistic order management;
+- advanced personalization screens;
+- large design-system work;
+- broad full-stack e2e automation before the core demo is visible.
 
-Embedded chat panel: message list, game-card recommendations rendered inside the
-conversation, quick replies as clickable chips (sent back as `choices`), `session_id`
-persisted in localStorage so session memory is tangible across turns and reloads.
-**Add-to-cart directly from a recommendation card.**
+## 1. Baseline Storefront ✅
 
-**Done when:** a multi-turn conversation refines results via chips, remembers context,
-and a recommended game lands in the cart without leaving the chat.
+Already implemented in this repo:
 
-## Phase 4 — Faceted search ⬜
+- Vite + React 19 + strict TypeScript;
+- ESLint, Prettier, Vitest, Testing Library, MSW and CI-ready scripts;
+- BFF-only API layer;
+- catalog grid and product detail page;
+- server-side cart client with optimistic add/remove/quantity updates;
+- checkout page posting an order and showing the recap;
+- MSW-backed tests for the main user flows.
 
-Search page: free-text query plus structured facets (players, duration, complexity,
-category, brand) mapped 1:1 to the search API; URL-driven state so searches are
-shareable/bookmarkable.
+Historical implementation specs live in:
 
-**Done when:** facets compose with free text; the URL fully reproduces a search.
+- [docs/phase-0.md](docs/phase-0.md) — scaffold;
+- [docs/phase-1.md](docs/phase-1.md) — catalog;
+- [docs/phase-2.md](docs/phase-2.md) — cart and checkout.
 
-## Phase 5 — Polish & showcase ⬜
+Those docs remain useful background, but this file is now the source of product
+direction.
 
-Visual pass (distinctive, not template-like), a11y audit, full-stack Playwright smoke
-e2e (lives here, drives the whole compose stack), screenshots/GIF for the three
-READMEs.
+## 2. BFF Contract Alignment 🔶
 
-**Done when:** the e2e passes in CI; the README walks a recruiter through the
-chat→cart loop with images.
+The `seller-shop` / `board-game-shop-api` interface is the source of truth. The web
+app stays BFF-only and adapts to that contract without leaking RAG-service details
+into React components.
 
-## Phase 6 — Personalization surfaced ⬜
+Implemented locally:
 
-The UI side of purchase-history personalization (shop injects history, seller grounds
-on it): greeting bubble referencing a real past order, owned games visibly absent from
-recommendations, recency phrasing ("la settimana scorsa…").
+- `POST /chat` contract starts in `seller-shop`;
+- `src/contracts/openapi.ts` is generated from the BFF OpenAPI document;
+- product, cart, order, health and chat feature contracts are typed slices of that
+  generated source;
+- MSW handlers mirror the browser-facing BFF contract used by the web tests.
 
-**Done when:** a purchase visibly changes the next conversation in the UI.
+Still open:
 
-## Ideas beyond the plan
+- whether the chat response should expose debug/display metadata such as understood
+  filters, strategy or grounding notes;
+- whether purchase-history context becomes part of the recorded demo.
 
-- **"Behind the scenes" panel** — toggle showing the advisor's strategy, accumulated
-  filters, and escalation signal per turn (needs a debug echo from the AI service).
-  Turns the UI into a demo of the _system_, not just the shop.
-- Optimistic UI / suspense boundaries once the basics are solid.
+Done when:
+
+- `src/contracts/` comes from the BFF source of truth;
+- MSW handlers mirror the agreed BFF contract;
+- no feature component knows about seller/RAG internals.
+
+## 3. Chat Advisor Showcase 🔶
+
+This is the main feature. The MVP is implemented against the BFF contract and covered
+by MSW tests; it still needs visual polish and a real-stack recording pass.
+
+Expected UX:
+
+- chat entry point visible from the shop layout;
+- message history with user and advisor turns;
+- pending/typing state that looks good in a short screen recording;
+- quick replies rendered as tappable chips and sent back as structured choices;
+- recommended games rendered as compact cards inside the advisor turn;
+- each recommendation can be added to the existing cart;
+- `session_id` persisted in localStorage;
+- graceful fallback/error state if the chat endpoint fails.
+
+Expected code shape:
+
+- `src/chat/` feature folder;
+- `src/api/chat.ts` endpoint module;
+- `src/contracts/chat.ts` BFF contract types;
+- `useChatSession` hook over TanStack Query mutations;
+- no direct calls to the Python seller service;
+- MSW tests that cover a multi-turn conversation, quick reply click and
+  add-to-cart-from-recommendation.
+
+Implemented locally:
+
+- chat entry point in the app shell;
+- message list, pending state, quick replies and recommendation cards;
+- persisted `chatSessionId`;
+- add-to-cart from a recommendation card;
+- chat -> recommendation card -> add-to-cart -> checkout test.
+
+Done when:
+
+- a user can ask for a vague game recommendation, click one quick reply, receive
+  grounded game cards and add one to the cart;
+- the flow is deterministic enough to film against the local stack or stable fixtures;
+- the README can describe this as the purpose of the project without hand-waving.
+
+## 4. Demo Polish ⬜
+
+Polish only after the chat path exists.
+
+Focus areas:
+
+- make the app feel less scaffold-like while keeping the UI quiet and compact;
+- improve cart drawer accessibility: focus management, Escape close, `aria-modal`;
+- stabilize layout so text, cards and buttons do not jump during recording;
+- add a short README GIF or screenshots of the chat-to-cart flow;
+- include a concise CV-ready project description.
+
+Done when:
+
+- `npm run lint`, `npm run format:check`, `npm run typecheck`, `npm test` and
+  `npm run build` are green;
+- the recorded flow shows the RAG seller value in under a minute;
+- the README tells a reviewer exactly what to look at and why it exists.
+
+## Later Options
+
+Only add these if they serve the showcase:
+
+- a small "why this recommendation" panel if the BFF exposes useful grounding/debug
+  metadata;
+- one Playwright smoke test for the filmed path;
+- faceted search, only if it becomes part of the chat demo rather than a separate
+  store feature.

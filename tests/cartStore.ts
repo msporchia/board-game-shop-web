@@ -12,9 +12,7 @@ export function readCart(customerId: string): Cart {
   const items = carts.get(customerId) ?? [];
   return {
     customerId,
-    currency: 'EUR',
     items,
-    totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
     totalCents: items.reduce((sum, item) => sum + item.lineTotalCents, 0),
   };
 }
