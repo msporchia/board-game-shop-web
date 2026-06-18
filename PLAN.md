@@ -147,9 +147,9 @@ concise CV-ready blurb in the README.
 
 Only add these if they serve the showcase:
 
-- an **order history** view (the BFF already exposes `GET /orders?customerId`) so a
-  switched-back identity shows its past orders, not just its cart — the natural next
-  grade of the demo-identity work;
+- an **order history** view (the BFF already exposes `GET /orders`, scoped by the
+  `X-Customer-Id` header) so a switched-back identity shows its past orders, not just
+  its cart — the natural next grade of the demo-identity work;
 - chat **personalization**: the BFF injecting purchase history as `customer_context`
   into `/chat`. Note `seller` does **not** accept `customer_context` today, so this is
   a cross-repo change (seller + BFF), not a web-only one;

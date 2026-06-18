@@ -76,22 +76,24 @@ temporary mirror.
 
 ### Existing BFF surface
 
+Customer-scoped routes take the active identity from a required `X-Customer-Id`
+header — there is no id in the path, body or query:
+
 - `GET /health`
 - `GET /products`
 - `GET /products/{id}`
-- `GET /carts/{customerId}`
-- `PUT /carts/{customerId}/items/{productId}`
-- `DELETE /carts/{customerId}/items/{productId}`
+- `GET /cart`
+- `PUT /cart/items/{productId}`
+- `DELETE /cart/items/{productId}`
 - `POST /orders`
-- optional/read-model: `GET /orders?customerId=...`
+- read-model: `GET /orders`
 
-### Next route: `POST /chat`
+### Chat route: `POST /chat`
 
-Browser-facing request:
+Browser-facing request (with header `X-Customer-Id: demo-customer`):
 
 ```json
 {
-  "customerId": "demo-customer",
   "sessionId": "demo-chat-session",
   "message": "Cerco un cooperativo per due",
   "choices": ["max 30 minuti"],
