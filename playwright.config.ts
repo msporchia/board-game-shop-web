@@ -11,7 +11,6 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './e2e',
-  testMatch: '**/*.e2e.ts',
   fullyParallel: true,
   reporter: 'list',
   use: {
@@ -21,7 +20,20 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  // `smoke` is the chat-to-cart test (and the GIF source); `capture` only writes the
+  // static README screenshots. `test:e2e` runs `smoke`; `demo:screenshots` runs `capture`.
+  projects: [
+    {
+      name: 'smoke',
+      testMatch: /chat-to-cart\.e2e\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'capture',
+      testMatch: /screenshots\.e2e\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
   // Serve the real production build, so the test also verifies it boots.
   webServer: {
     command: 'npm run build && npm run preview -- --port 4173 --strictPort',

@@ -14,8 +14,9 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
-    "demo:record": "playwright test && node scripts/record-demo.mjs"
+    "test:e2e": "playwright test --project=smoke",
+    "demo:record": "playwright test --project=smoke && node scripts/record-demo.mjs",
+    "demo:screenshots": "playwright test --project=capture"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.0",

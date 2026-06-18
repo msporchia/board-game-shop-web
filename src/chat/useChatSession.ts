@@ -2,7 +2,7 @@ import { useMutation, type UseMutationResult } from '@tanstack/react-query';
 import { sendChatTurn } from '../api/chat.ts';
 import type { ChatResponse } from '../contracts/chat.ts';
 import { getChatSessionId } from '../customer/chatSessionId.ts';
-import { getCustomerId } from '../customer/customerId.ts';
+import { useCustomer } from '../customer/useCustomer.ts';
 
 interface SendChatInput {
   message: string;
@@ -10,7 +10,7 @@ interface SendChatInput {
 }
 
 export function useChatSession(): UseMutationResult<ChatResponse, Error, SendChatInput> {
-  const customerId = getCustomerId();
+  const customerId = useCustomer().customer.id;
   const sessionId = getChatSessionId();
 
   return useMutation({

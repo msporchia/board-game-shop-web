@@ -30,7 +30,8 @@ Make special:
 Avoid unless it directly helps the filmed demo:
 
 - standalone faceted search page;
-- auth, payment, account area or realistic order management;
+- real auth (passwords/sessions) or payment — the passwordless identity switcher is
+  fine, full account management is not;
 - advanced personalization screens;
 - large design-system work;
 - broad full-stack e2e automation before the core demo is visible.
@@ -45,16 +46,19 @@ Already implemented in this repo:
 - catalog grid and product detail page;
 - server-side cart client with optimistic add/remove/quantity updates;
 - checkout page posting an order and showing the recap;
-- MSW-backed tests for the main user flows.
+- MSW-backed tests for the main user flows;
+- a passwordless demo identity that can be switched like a basic login (see below).
 
-Historical implementation specs live in:
+This file is the single source of product direction.
 
-- [docs/phase-0.md](docs/phase-0.md) — scaffold;
-- [docs/phase-1.md](docs/phase-1.md) — catalog;
-- [docs/phase-2.md](docs/phase-2.md) — cart and checkout.
+### Demo identity ✅
 
-Those docs remain useful background, but this file is now the source of product
-direction.
+There is no real auth (a non-goal). The customer is a local handle — a generated id
+plus a friendly name ("Paolo", "Giulia", …) kept in localStorage. The id is sent to
+the BFF as the `X-Customer-Id` header, standing in for a token a real backend could
+issue. A header switcher lets you create or switch identities; the server-side cart
+(and, later, orders) repopulate from the BFF for the active id, which is what makes
+persistence/"memory" tangible without building accounts or passwords.
 
 ## 2. BFF Contract Alignment 🔶
 
@@ -82,10 +86,11 @@ Done when:
 - MSW handlers mirror the agreed BFF contract;
 - no feature component knows about seller/RAG internals.
 
-## 3. Chat Advisor Showcase 🔶
+## 3. Chat Advisor Showcase ✅ (local)
 
-This is the main feature. The MVP is implemented against the BFF contract and covered
-by MSW tests; it still needs visual polish and a real-stack recording pass.
+This is the main feature. It is implemented against the BFF contract, covered by MSW
+tests, polished and accessible, and recorded against a mocked stack. A real-stack
+recording pass (with `seller` + `seller-shop` up) is the remaining open item.
 
 Expected UX:
 
@@ -123,31 +128,31 @@ Done when:
 - the flow is deterministic enough to film against the local stack or stable fixtures;
 - the README can describe this as the purpose of the project without hand-waving.
 
-## 4. Demo Polish ⬜
+## 4. Demo Polish ✅ (local)
 
-Polish only after the chat path exists.
+Done:
 
-Focus areas:
+- chat drawer accessibility via `useDialogA11y`: focus trap, initial focus, Escape
+  close, `aria-modal`, auto-scroll;
+- motion polish (slide-in, typing indicator, message transitions) that respects
+  `motion-reduce`;
+- one Playwright smoke test for the filmed chat-to-cart path, which doubles as the
+  source of the demo recording (`npm run demo:record` → `docs/demo/`);
+- all gates green: `lint`, `format:check`, `typecheck`, `test`, `test:e2e`, `build`.
 
-- make the app feel less scaffold-like while keeping the UI quiet and compact;
-- improve cart drawer accessibility: focus management, Escape close, `aria-modal`;
-- stabilize layout so text, cards and buttons do not jump during recording;
-- add a short README GIF or screenshots of the chat-to-cart flow;
-- include a concise CV-ready project description.
-
-Done when:
-
-- `npm run lint`, `npm run format:check`, `npm run typecheck`, `npm test` and
-  `npm run build` are green;
-- the recorded flow shows the RAG seller value in under a minute;
-- the README tells a reviewer exactly what to look at and why it exists.
+Remaining: a real-stack recording once `seller` + `seller-shop` are up, and a
+concise CV-ready blurb in the README.
 
 ## Later Options
 
 Only add these if they serve the showcase:
 
-- a small "why this recommendation" panel if the BFF exposes useful grounding/debug
-  metadata;
-- one Playwright smoke test for the filmed path;
+- an **order history** view (the BFF already exposes `GET /orders?customerId`) so a
+  switched-back identity shows its past orders, not just its cart — the natural next
+  grade of the demo-identity work;
+- chat **personalization**: the BFF injecting purchase history as `customer_context`
+  into `/chat`. Note `seller` does **not** accept `customer_context` today, so this is
+  a cross-repo change (seller + BFF), not a web-only one;
+- a small "why this recommendation" panel if the BFF exposes grounding/debug metadata;
 - faceted search, only if it becomes part of the chat demo rather than a separate
   store feature.

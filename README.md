@@ -54,18 +54,26 @@ Implemented in this repo:
 - BFF-only API layer;
 - OpenAPI-generated BFF contract types (`npm run generate:api`);
 - server-side cart and checkout client, with optimistic updates;
-- chat advisor panel with quick replies, recommendation cards and add-to-cart;
+- chat advisor panel with quick replies, recommendation cards and add-to-cart,
+  accessible (focus trap, Escape, `aria-modal`) and motion-polished;
+- passwordless **demo identity switcher**: pick/create a local user (sent as the
+  `X-Customer-Id` header) and watch the server cart repopulate per identity;
 - shared loading/error/empty states;
-- MSW-backed tests for catalog, product detail, cart, checkout, chat and health;
-- CI-ready scripts for lint, format, typecheck, test and build.
+- MSW-backed tests for catalog, product detail, cart, checkout, chat, health and the
+  identity switch;
+- one Playwright smoke test for the chat-to-cart path that also records the demo
+  (`npm run demo:record` → `docs/demo/`);
+- CI-ready scripts for lint, format, typecheck, test, e2e and build.
 
 Next focus:
 
 1. run the chat flow against the real local stack once `seller` and `seller-shop`
-   are both up;
-2. polish the chat panel enough for the short RAG demo recording;
-3. improve drawer accessibility basics (focus, Escape, `aria-modal`);
-4. add a GIF/screenshots once the real chat flow is filmed.
+   are both up, and verify the seller→BFF payload mapping (snake_case `id_product`
+   etc. → the camelCase browser contract);
+2. add an order-history view (the BFF already exposes `GET /orders?customerId`) so a
+   switched-back identity shows its past orders;
+3. optional: chat personalization via `customer_context` (a cross-repo change —
+   `seller` does not accept it yet).
 
 ## Architecture
 
@@ -92,7 +100,7 @@ slices from that generated source.
 | Routing      | React Router                                         | Small route tree: catalog `/`, product `/games/:id`, checkout `/checkout`                  |
 | Cart & money | Server-side cart on the BFF                          | Prices, totals and order creation belong to the backend; the client renders and reconciles |
 | API boundary | OpenAPI-generated BFF contracts + typed API modules  | Components consume hooks; fetch details stay outside the UI                                |
-| Identity     | `customer_id` and later `session_id` in localStorage | Demo identity, no auth; enough to show cart persistence and conversational memory          |
+| Identity     | local `customer_id` sent as `X-Customer-Id` header   | Passwordless demo identity (switchable like a basic login), token-shaped; no real auth     |
 | Styling      | Tailwind CSS, no component kit                       | Keeps the UI lightweight and custom enough for a portfolio/demo                            |
 | Tests        | Vitest + React Testing Library + MSW                 | User flows tested against mocked HTTP contracts, not mocked hooks                          |
 
@@ -126,6 +134,9 @@ npm run typecheck   # tsc -b, no emit
 npm run lint        # eslint .
 npm run format      # prettier --write .   (format:check in CI)
 npm test            # vitest run           (test:watch for watch mode)
+npm run test:e2e    # Playwright chat-to-cart smoke (mocked BFF, real browser)
+npm run demo:record # run the smoke and render docs/demo/chat-to-cart.gif (needs ffmpeg)
+npm run demo:screenshots # capture the static docs/screenshots/*.png
 ```
 
 Dockerised dev: `docker compose up --build`, serving on `http://localhost:5173`.

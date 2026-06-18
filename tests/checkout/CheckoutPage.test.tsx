@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CheckoutPage } from '../../src/checkout/CheckoutPage.tsx';
-import { getCustomerId } from '../../src/customer/customerId.ts';
+import { ensureActiveCustomer } from '../../src/customer/customers.ts';
 import { readCart, writeCartItem } from '../cartStore.ts';
 import { renderWithProviders } from '../renderWithProviders.tsx';
 
 function seedCart(): string {
-  const customerId = getCustomerId();
+  const customerId = ensureActiveCustomer().id;
   writeCartItem(customerId, {
     productId: 101,
     name: 'Azul',

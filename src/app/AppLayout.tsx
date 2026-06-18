@@ -4,6 +4,7 @@ import { CartButton } from '../cart/CartButton.tsx';
 import { CartDrawer } from '../cart/CartDrawer.tsx';
 import { ChatButton } from '../chat/ChatButton.tsx';
 import { ChatDrawer } from '../chat/ChatDrawer.tsx';
+import { CustomerMenu } from '../customer/CustomerMenu.tsx';
 import { ShopStatusBadge } from '../health/ShopStatusBadge.tsx';
 
 /** App shell: header with brand, BFF status and cart; pages render in the outlet. */
@@ -22,6 +23,7 @@ export function AppLayout() {
             <ShopStatusBadge />
             <ChatButton onClick={() => setChatOpen(true)} />
             <CartButton onClick={() => setCartOpen(true)} />
+            <CustomerMenu />
           </div>
         </div>
       </header>

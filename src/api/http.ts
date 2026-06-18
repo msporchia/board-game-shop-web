@@ -1,4 +1,5 @@
 import { SHOP_API_URL } from './config.ts';
+import { getActiveCustomerId } from '../customer/customers.ts';
 
 /** Error thrown for non-2xx responses; carries the HTTP status so callers can branch (e.g. 404). */
 export class ApiError extends Error {
@@ -26,10 +27,20 @@ interface JsonRequestOptions {
 export async function fetchJson<T>(path: string, options: JsonRequestOptions = {}): Promise<T> {
   const { method = 'GET', body, signal } = options;
   const url = `${SHOP_API_URL}${path}`;
+  // The active demo identity travels as a header — a stand-in for an auth token a
+  // real backend could issue. The BFF can adopt it and drop the path/body customerId.
+  const customerId = getActiveCustomerId();
+  const headers: Record<string, string> = {};
+  if (body !== undefined) {
+    headers['Content-Type'] = 'application/json';
+  }
+  if (customerId) {
+    headers['X-Customer-Id'] = customerId;
+  }
   const response = await fetch(url, {
     method,
     signal,
-    headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
+    headers: Object.keys(headers).length > 0 ? headers : undefined,
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!response.ok) {

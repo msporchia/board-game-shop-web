@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteCartItem, fetchCart, putCartItem } from '../api/cart.ts';
 import type { Cart, CartItem } from '../contracts/cart.ts';
-import { getCustomerId } from '../customer/customerId.ts';
+import { useCustomer } from '../customer/useCustomer.ts';
 
 /** Product fields needed to render an optimistic cart line before the server answers. */
 export interface ProductRef {
@@ -68,7 +68,7 @@ function dropItem(cart: Cart, productId: number): Cart {
 }
 
 export function useCart(): UseCartResult {
-  const customerId = getCustomerId();
+  const customerId = useCustomer().customer.id;
   const queryClient = useQueryClient();
   const queryKey = ['cart', customerId];
 
