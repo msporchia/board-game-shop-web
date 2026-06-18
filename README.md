@@ -53,7 +53,10 @@ add one to the cart and check out — recorded in a real browser against a mocke
 
 ![Chat-to-cart demo](docs/demo/chat-to-cart.gif)
 
-The individual stages (regenerate with `npm run demo:screenshots`):
+The individual stages, captured against the **real BFF** — real catalog, cover art,
+prices, server-computed cart totals and a real created order; only the advisor's reply
+is canned (regenerate with `npm run demo:screenshots:real`; `npm run demo:screenshots`
+captures the same stages against a fully mocked BFF when the backend is down):
 
 |                                                                                                                                                                          |                                                                                                                                                        |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -82,11 +85,16 @@ Implemented in this repo:
   (`npm run demo:record` → `docs/demo/`);
 - CI-ready scripts for lint, format, typecheck, test, e2e and build.
 
+Verified against the real BFF (`board-game-shop-api`): the storefront, server cart,
+checkout and order creation run end to end with live catalog data, real cover art and
+server-computed money — the screenshots above are captured from that run, not a mock.
+
 Next focus:
 
-1. run the chat flow against the real local stack once `seller` and `seller-shop`
-   are both up, and verify the seller→BFF payload mapping (snake_case `id_product`
-   etc. → the camelCase browser contract);
+1. run the **chat advisor turn** against the live RAG seller (the only surface still
+   faked in the real-BFF run): bring `seller` up and verify the seller→BFF payload
+   mapping (snake_case `id_product` etc. → the camelCase browser contract) and the
+   per-customer `session_id` handshake;
 2. add an order-history view (the BFF already exposes `GET /orders?customerId`) so a
    switched-back identity shows its past orders;
 3. optional: chat personalization via `customer_context` (a cross-repo change —
@@ -153,7 +161,8 @@ npm run format      # prettier --write .   (format:check in CI)
 npm test            # vitest run           (test:watch for watch mode)
 npm run test:e2e    # Playwright chat-to-cart smoke (mocked BFF, real browser)
 npm run demo:record # run the smoke and render docs/demo/chat-to-cart.gif (needs ffmpeg)
-npm run demo:screenshots # capture the static docs/screenshots/*.png
+npm run demo:screenshots # capture docs/screenshots/*.png against a mocked BFF
+npm run demo:screenshots:real # same stages against the real BFF (only the chat is faked)
 ```
 
 Dockerised dev: `docker compose up --build`, serving on `http://localhost:5173`.
