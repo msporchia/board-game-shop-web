@@ -9,7 +9,7 @@ export function useCreateOrder(): UseMutationResult<Order, Error, void> {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => createOrder(customerId),
+    mutationFn: () => createOrder(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart', customerId] }),
   });
 }

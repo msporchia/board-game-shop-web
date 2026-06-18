@@ -177,21 +177,21 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/carts/{customerId}': {
+  '/cart': {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** A customer's cart (empty for a never-seen customer) */
+    /** The active customer's cart (resolved from the X-Customer-Id header) */
     get: {
       parameters: {
         query?: never;
-        header?: never;
-        path: {
-          customerId: string;
+        header: {
+          'X-Customer-Id': string;
         };
+        path?: never;
         cookie?: never;
       };
       requestBody?: never;
@@ -226,7 +226,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/carts/{customerId}/items/{productId}': {
+  '/cart/items/{productId}': {
     parameters: {
       query?: never;
       header?: never;
@@ -238,9 +238,10 @@ export interface paths {
     put: {
       parameters: {
         query?: never;
-        header?: never;
+        header: {
+          'X-Customer-Id': string;
+        };
         path: {
-          customerId: string;
           productId: number;
         };
         cookie?: never;
@@ -292,9 +293,10 @@ export interface paths {
     delete: {
       parameters: {
         query?: never;
-        header?: never;
+        header: {
+          'X-Customer-Id': string;
+        };
         path: {
-          customerId: string;
           productId: number;
         };
         cookie?: never;
@@ -338,10 +340,10 @@ export interface paths {
     /** A customer's order history, newest first */
     get: {
       parameters: {
-        query: {
-          customerId: string;
+        query?: never;
+        header: {
+          'X-Customer-Id': string;
         };
-        header?: never;
         path?: never;
         cookie?: never;
       };
@@ -381,13 +383,7 @@ export interface paths {
         path?: never;
         cookie?: never;
       };
-      requestBody: {
-        content: {
-          'application/json': {
-            customerId: string;
-          };
-        };
-      };
+      requestBody?: never;
       responses: {
         /** @description Default Response */
         201: {
@@ -443,14 +439,15 @@ export interface paths {
     post: {
       parameters: {
         query?: never;
-        header?: never;
+        header: {
+          'X-Customer-Id': string;
+        };
         path?: never;
         cookie?: never;
       };
       requestBody: {
         content: {
           'application/json': {
-            customerId: string;
             sessionId: string;
             message: string;
             /** @default [] */

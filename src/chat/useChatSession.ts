@@ -11,10 +11,9 @@ interface SendChatInput {
 
 export function useChatSession(): UseMutationResult<ChatResponse, Error, SendChatInput> {
   const customerId = useCustomer().customer.id;
-  const sessionId = getChatSessionId();
+  const sessionId = getChatSessionId(customerId);
 
   return useMutation({
-    mutationFn: ({ message, choices = [] }) =>
-      sendChatTurn({ customerId, sessionId, message, choices, k: 4 }),
+    mutationFn: ({ message, choices = [] }) => sendChatTurn({ sessionId, message, choices, k: 4 }),
   });
 }

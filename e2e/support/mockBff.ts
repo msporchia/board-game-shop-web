@@ -77,7 +77,7 @@ export async function mockShopBff(page: Page) {
     });
   });
 
-  await page.route(/\/carts\/[^/]+\/items\/\d+$/, async (route) => {
+  await page.route(/\/cart\/items\/\d+$/, async (route) => {
     const request = route.request();
     const productId = Number(new URL(request.url()).pathname.split('/').pop());
     const product = products.find((entry) => entry.id === productId);
@@ -100,7 +100,7 @@ export async function mockShopBff(page: Page) {
     await route.fulfill({ json: cartFor('demo-customer') });
   });
 
-  await page.route(/\/carts\/[^/]+$/, (route) => route.fulfill({ json: cartFor('demo-customer') }));
+  await page.route(/\/cart$/, (route) => route.fulfill({ json: cartFor('demo-customer') }));
 
   await page.route(/\/orders$/, (route) => {
     const order = {

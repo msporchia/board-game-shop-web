@@ -72,9 +72,11 @@ export function useCart(): UseCartResult {
   const queryClient = useQueryClient();
   const queryKey = ['cart', customerId];
 
+  // The id no longer travels in the URL (it's the X-Customer-Id header), but the
+  // cache stays keyed by it so switching identity refetches instead of showing stale data.
   const query = useQuery({
     queryKey,
-    queryFn: ({ signal }) => fetchCart(customerId, signal),
+    queryFn: ({ signal }) => fetchCart(signal),
   });
 
   const optimistically = async (rewrite: (cart: Cart) => Cart) => {
@@ -96,7 +98,7 @@ export function useCart(): UseCartResult {
 
   const setItemMutation = useMutation({
     mutationFn: ({ product, quantity }: { product: ProductRef; quantity: number }) =>
-      putCartItem(customerId, product.id, quantity),
+      putCartItem(product.id, quantity),
     onMutate: ({ product, quantity }) =>
       optimistically((cart) => upsertItem(cart, product, quantity)),
     onError: (_error, _variables, context) => rollback(context),
@@ -104,7 +106,7 @@ export function useCart(): UseCartResult {
   });
 
   const removeItemMutation = useMutation({
-    mutationFn: ({ productId }: { productId: number }) => deleteCartItem(customerId, productId),
+    mutationFn: ({ productId }: { productId: number }) => deleteCartItem(productId),
     onMutate: ({ productId }) => optimistically((cart) => dropItem(cart, productId)),
     onError: (_error, _variables, context) => rollback(context),
     onSettled: settle,

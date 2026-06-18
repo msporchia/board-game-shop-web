@@ -245,9 +245,9 @@ function ChatBubble({
     <div className="max-w-[92%] animate-rise space-y-3 rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-800 motion-reduce:animate-none">
       <p>{turn.text}</p>
       {turn.games.length > 0 ? (
-        <ul className="space-y-3">
+        <ul className="grid grid-cols-2 gap-2">
           {turn.games.map((game) => (
-            <li key={game.id}>
+            <li key={game.id} className="flex">
               <RecommendationCard game={game} />
             </li>
           ))}
@@ -276,16 +276,14 @@ function RecommendationCard({ game }: { game: ChatRecommendation }) {
   const facts = [game.playersDisplay, `${game.durationMin} min`, game.complexity];
 
   return (
-    <article className="grid grid-cols-[4.5rem_1fr] gap-3 rounded-lg border border-slate-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md">
-      <img src={game.image} alt="" className="size-18 rounded-md object-cover" />
-      <div className="min-w-0 space-y-2">
-        <div>
-          <h3 className="truncate font-semibold text-slate-900">{game.name}</h3>
-          <p className="text-xs text-slate-600">{facts.join(' · ')}</p>
-        </div>
+    <article className="flex h-full w-full flex-col gap-2 rounded-lg border border-slate-200 bg-white p-2.5 shadow-sm transition-shadow hover:shadow-md">
+      <img src={game.image} alt="" className="aspect-square w-full rounded-md object-cover" />
+      <div className="min-w-0 flex-1 space-y-1">
+        <h3 className="truncate text-sm font-semibold text-slate-900">{game.name}</h3>
+        <p className="text-xs text-slate-600">{facts.join(' · ')}</p>
         <p className="text-sm font-semibold text-slate-900">{formatCents(game.priceCents)}</p>
-        <AddToCartButton product={game} />
       </div>
+      <AddToCartButton product={game} compact />
     </article>
   );
 }

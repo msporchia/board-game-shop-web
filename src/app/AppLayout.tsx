@@ -5,12 +5,14 @@ import { CartDrawer } from '../cart/CartDrawer.tsx';
 import { ChatButton } from '../chat/ChatButton.tsx';
 import { ChatDrawer } from '../chat/ChatDrawer.tsx';
 import { CustomerMenu } from '../customer/CustomerMenu.tsx';
+import { useCustomer } from '../customer/useCustomer.ts';
 import { ShopStatusBadge } from '../health/ShopStatusBadge.tsx';
 
 /** App shell: header with brand, BFF status and cart; pages render in the outlet. */
 export function AppLayout() {
   const [cartOpen, setCartOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const { customer } = useCustomer();
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -30,7 +32,8 @@ export function AppLayout() {
       <main className="mx-auto max-w-6xl px-6 py-8">
         <Outlet />
       </main>
-      <ChatDrawer open={chatOpen} onClose={() => setChatOpen(false)} />
+      {/* Remount on identity change so the conversation resets for the new user. */}
+      <ChatDrawer key={customer.id} open={chatOpen} onClose={() => setChatOpen(false)} />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );

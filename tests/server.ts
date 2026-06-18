@@ -8,6 +8,9 @@ const SHOP_API_URL = 'http://localhost:3000';
 const notFound = (message: string) =>
   HttpResponse.json({ error: 'Not Found', message }, { status: 404 });
 
+/** The active customer now arrives in the X-Customer-Id header (no path/body id). */
+const customerIdOf = (request: Request) => request.headers.get('X-Customer-Id') ?? 'anonymous';
+
 /** Default happy-path handlers; individual tests override with server.use(...). */
 export const handlers = [
   http.get(`${SHOP_API_URL}/health`, () =>
@@ -32,11 +35,12 @@ export const handlers = [
     return product ? HttpResponse.json(product) : notFound('Product not found');
   }),
 
-  http.get(`${SHOP_API_URL}/carts/:customerId`, ({ params }) =>
-    HttpResponse.json(readCart(String(params.customerId))),
+  http.get(`${SHOP_API_URL}/cart`, ({ request }) =>
+    HttpResponse.json(readCart(customerIdOf(request))),
   ),
 
-  http.put(`${SHOP_API_URL}/carts/:customerId/items/:productId`, async ({ params, request }) => {
+  http.put(`${SHOP_API_URL}/cart/items/:productId`, async ({ params, request }) => {
+    const customerId = customerIdOf(request);
     const { quantity } = (await request.json()) as { quantity: number };
     const product = products.find((entry) => String(entry.id) === params.productId);
     if (!product) {
@@ -53,7 +57,7 @@ export const handlers = [
         { status: 422 },
       );
     }
-    writeCartItem(String(params.customerId), {
+    writeCartItem(customerId, {
       productId: product.id,
       name: product.name,
       image: product.image,
@@ -61,16 +65,17 @@ export const handlers = [
       quantity,
       lineTotalCents: product.priceCents * quantity,
     });
-    return HttpResponse.json(readCart(String(params.customerId)));
+    return HttpResponse.json(readCart(customerId));
   }),
 
-  http.delete(`${SHOP_API_URL}/carts/:customerId/items/:productId`, ({ params }) => {
-    removeCartItem(String(params.customerId), Number(params.productId));
-    return HttpResponse.json(readCart(String(params.customerId)));
+  http.delete(`${SHOP_API_URL}/cart/items/:productId`, ({ params, request }) => {
+    const customerId = customerIdOf(request);
+    removeCartItem(customerId, Number(params.productId));
+    return HttpResponse.json(readCart(customerId));
   }),
 
-  http.post(`${SHOP_API_URL}/orders`, async ({ request }) => {
-    const { customerId } = (await request.json()) as { customerId: string };
+  http.post(`${SHOP_API_URL}/orders`, ({ request }) => {
+    const customerId = customerIdOf(request);
     const cart = readCart(customerId);
     if (cart.items.length === 0) {
       return HttpResponse.json(

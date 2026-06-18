@@ -45,6 +45,23 @@ make recommended games buyable. The distinctive part should be the **chat adviso
 That is the sensible "special" part: it directly exposes the RAG seller's purpose,
 instead of adding complexity just to make the UI look busy.
 
+## Screenshots
+
+The headline flow — ask the advisor, get choices, then two grounded recommendations,
+add one to the cart and check out — recorded in a real browser against a mocked BFF
+(`npm run demo:record`):
+
+![Chat-to-cart demo](docs/demo/chat-to-cart.gif)
+
+The individual stages (regenerate with `npm run demo:screenshots`):
+
+|                                                                                                                                                                          |                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ![Catalog](docs/screenshots/01-catalog.png)<br>**Catalog** — the deliberately minimal storefront baseline.                                                               | ![Cart](docs/screenshots/02-cart.png)<br>**Cart** — server-side cart, optimistic updates, server-computed totals.                                      |
+| ![Identity switcher](docs/screenshots/03-identity-switcher.png)<br>**Identity switcher** — passwordless demo "login"; switching repopulates the server cart per user.    | ![Chat choices](docs/screenshots/04-chat-choices.png)<br>**Chat — choices** — the advisor narrows down with structured quick replies before proposing. |
+| ![Chat recommendations](docs/screenshots/05-chat-recommendations.png)<br>**Chat — recommendations** — two grounded game cards inside the conversation, each add-to-cart. | ![Checkout](docs/screenshots/06-checkout.png)<br>**Checkout** — server-computed recap before confirming.                                               |
+| ![Order confirmed](docs/screenshots/07-order-confirmed.png)<br>**Order confirmed** — the server cart becomes an order.                                                   |                                                                                                                                                        |
+
 ## Current status
 
 Implemented in this repo:
@@ -93,16 +110,16 @@ slices from that generated source.
 
 ## Stack
 
-|              | Choice                                               | Why                                                                                        |
-| ------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Build        | Vite + React 19 + TypeScript strict                  | Modern React app with strict compile-time checks                                           |
-| Server state | TanStack Query                                       | Caching, retries, invalidation and optimistic updates without custom fetch state           |
-| Routing      | React Router                                         | Small route tree: catalog `/`, product `/games/:id`, checkout `/checkout`                  |
-| Cart & money | Server-side cart on the BFF                          | Prices, totals and order creation belong to the backend; the client renders and reconciles |
-| API boundary | OpenAPI-generated BFF contracts + typed API modules  | Components consume hooks; fetch details stay outside the UI                                |
-| Identity     | local `customer_id` sent as `X-Customer-Id` header   | Passwordless demo identity (switchable like a basic login), token-shaped; no real auth     |
-| Styling      | Tailwind CSS, no component kit                       | Keeps the UI lightweight and custom enough for a portfolio/demo                            |
-| Tests        | Vitest + React Testing Library + MSW                 | User flows tested against mocked HTTP contracts, not mocked hooks                          |
+|              | Choice                                              | Why                                                                                        |
+| ------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Build        | Vite + React 19 + TypeScript strict                 | Modern React app with strict compile-time checks                                           |
+| Server state | TanStack Query                                      | Caching, retries, invalidation and optimistic updates without custom fetch state           |
+| Routing      | React Router                                        | Small route tree: catalog `/`, product `/games/:id`, checkout `/checkout`                  |
+| Cart & money | Server-side cart on the BFF                         | Prices, totals and order creation belong to the backend; the client renders and reconciles |
+| API boundary | OpenAPI-generated BFF contracts + typed API modules | Components consume hooks; fetch details stay outside the UI                                |
+| Identity     | local `customer_id` sent as `X-Customer-Id` header  | Passwordless demo identity (switchable like a basic login), token-shaped; no real auth     |
+| Styling      | Tailwind CSS, no component kit                      | Keeps the UI lightweight and custom enough for a portfolio/demo                            |
+| Tests        | Vitest + React Testing Library + MSW                | User flows tested against mocked HTTP contracts, not mocked hooks                          |
 
 ## Structure convention
 
