@@ -16,7 +16,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test --project=smoke",
     "demo:record": "playwright test --project=smoke && node scripts/record-demo.mjs",
-    "demo:screenshots": "playwright test --project=capture"
+    "demo:screenshots": "playwright test --project=capture",
+    "demo:screenshots:real": "playwright test --project=capture-real"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.0",
